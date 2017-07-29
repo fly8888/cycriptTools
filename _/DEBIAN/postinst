@@ -1,0 +1,12 @@
+#!/bin/sh
+chown root /usr/bin/keychain
+chmod 755 /usr/bin/keychain
+
+chown root /usr/bin/Clutch
+chmod 755 /usr/bin/Clutch
+
+chown root /usr/bin/defaults
+chmod 755 /usr/bin/defaults
+
+chown root /etc/profile.d/cycript.sh
+chmod 755 /etc/profile.d/cycript.sh

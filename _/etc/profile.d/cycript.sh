@@ -1,0 +1,1 @@
+cyc () { cycript -p $1 /var/root/common.cy > /dev/null ; cycript -p $1; }

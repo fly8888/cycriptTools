@@ -1,0 +1,3 @@
+#!/bin/sh
+chown root /usr/bin/keychain
+chmod 755 /usr/bin/keychain
