@@ -1,7 +1,7 @@
 #import "query.h"
 #import "saveKeychain.h"
 
-NSDictionary * getKeychainItemDic(NSDictionary * account,CFTypeRef kSecClassType)
+NSDictionary * fixKeychainItemDic(NSDictionary * account)
 {
 
     if([account isKindOfClass:[NSDictionary class]])
@@ -23,30 +23,60 @@ NSDictionary * getKeychainItemDic(NSDictionary * account,CFTypeRef kSecClassType
     }
     return nil;
 }
-
-NSArray * getKeychainItemsArray(NSArray * items ,CFTypeRef kSecClassType )
-{
-    NSMutableArray * kindsDataArray = [NSMutableArray array];
-    for(NSDictionary * account in items)
-    {
-        NSDictionary * re = getKeychainItemDic(account,kSecClassType);
-        if(re)[kindsDataArray addObject:re];
-    }
-    return kindsDataArray;
-}
-
-void ghostKeychain(NSString * path)
+//获取所有keychain
+NSMutableDictionary * getAllKeychainItems()
 {
     NSMutableDictionary * ghostDic = [[NSMutableDictionary alloc]init];
 	NSDictionary * keychains = getAllKeychainObjDic();
 	for(id kSecClassType in [keychains allKeys])
 	{
 		NSArray * secClassValues = keychains[kSecClassType];
-        NSArray * re = getKeychainItemsArray(secClassValues,(__bridge CFTypeRef)kSecClassType);
-        [ghostDic setValue:re forKey:kSecClassType];
+        NSMutableArray * kindsDataArray = [[NSMutableArray alloc]init];
+        for(NSDictionary * account in secClassValues)
+        {
+            NSDictionary * re = fixKeychainItemDic(account);
+            if(re)[kindsDataArray addObject:re];
+        }
+        [ghostDic setValue:kindsDataArray forKey:kSecClassType];
 	}
+    return ghostDic;
+}
+
+//获取指定用户组的keychain
+NSMutableDictionary * getKeychainItemsOfGroup(NSString * groupName)
+{
+    NSMutableDictionary * ghostDic = [[NSMutableDictionary alloc]init];
+	NSDictionary * keychains = getAllKeychainObjDic();
+	for(id kSecClassType in [keychains allKeys])
+	{
+        NSMutableArray * kindsDataArray = [[NSMutableArray alloc]init];
+		NSArray * secClassValues = keychains[kSecClassType];
+        for(NSDictionary * account in secClassValues)
+        {
+            NSString * agrp = account[@"agrp"];
+            if(agrp&&[agrp rangeOfString:groupName].location!=NSNotFound)
+            {
+                NSDictionary * re = fixKeychainItemDic(account);
+                if(re)[kindsDataArray addObject:re];
+            }
+        }
+        [ghostDic setValue:kindsDataArray forKey:kSecClassType];
+	}
+    return ghostDic;
+}
+
+void ghostKeychain(NSString * path)
+{
+    NSMutableDictionary * ghostDic = getAllKeychainItems();
 	if([ghostDic writeToFile:path atomically:YES])
     printf("----success--save to %s----\n",[path UTF8String]);
     else printf("----error--save to %s----\n",[path UTF8String]);
 }
 
+void ghostKeychainWithGroup(NSString * path,NSString * groupName)
+{
+    NSMutableDictionary * ghostDic = getKeychainItemsOfGroup(groupName);
+	if([ghostDic writeToFile:path atomically:YES])
+    printf("----success--save to %s----\n",[path UTF8String]);
+    else printf("----error--save to %s----\n",[path UTF8String]);
+}

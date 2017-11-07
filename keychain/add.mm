@@ -19,12 +19,10 @@ BOOL addKeychainItem(NSDictionary * item)
 
 void addKeychainItemWithPath(NSString * path ,NSString * group)
 {
-    //tmp/keychain.plist
     NSDictionary * keychainItems =  [NSDictionary dictionaryWithContentsOfFile:path];
     BOOL statu = NO;
     if(keychainItems&&keychainItems.count>0)
-    {
-        
+    {       
         for(NSString * classType in [keychainItems allKeys])
         {
             NSArray * itemsOfType = keychainItems[classType];
@@ -34,11 +32,15 @@ void addKeychainItemWithPath(NSString * path ,NSString * group)
                 if(itemAgrp&&[itemAgrp rangeOfString:group].location!=NSNotFound)
                 {
                     statu = addKeychainItem(item);
+                    if(!statu)
+                    {
+                        printf("-----ERROR---NO KEYCHAIN DATA OR KEYCHAIN ALREADY HAS THIS ITEM!-------\n");
+                        return;
+                    }
                 }
             }
         }
     }
     if(statu)printf("-----ADD KEYCHAIN SUCCESS!---%s----\n",[group UTF8String]);
     else printf("-----ERROR---NO KEYCHAIN DATA OR KEYCHAIN ALREADY HAS THIS ITEM!-------\n");
-    
 }

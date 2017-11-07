@@ -24,6 +24,7 @@ struct DeleteCmd {
 struct GhostCmd {
     BOOL hasGhost;
     NSString * path;
+	NSString * group;
 };
 
 struct RecoverCmd {
@@ -60,7 +61,7 @@ int main(int argc, char **argv, char **envp) {
 	struct HelpCmd help = {NO};
 	struct ListCmd list = {NO,NO,NO,nil};
 	struct DeleteCmd delet = {NO,NO,NO,nil}; 
-	struct GhostCmd ghost = {NO,nil};
+	struct GhostCmd ghost = {NO,nil,nil};
 	struct RecoverCmd recover = {NO,nil,nil};
 	for(int i= 0; i<arguments.count;i++)
 	{
@@ -77,11 +78,13 @@ int main(int argc, char **argv, char **envp) {
 		{
 			delet.hasG = YES;
 			list.hasG = YES;
+
 			if(i+1<arguments.count&&[(NSString*)(arguments[i+1]) length]>0)
 			{
 				delet.group = arguments[i+1];
 				recover.group = arguments[i+1];
 				list.group = arguments[i+1];
+				ghost.group = arguments[i+1];
 			}
 			// else
 			// {
@@ -101,8 +104,11 @@ int main(int argc, char **argv, char **envp) {
 		{
 			if(i+1<arguments.count&&[(NSString*)(arguments[i+1]) length]>0)
 			{
-				ghost.path = arguments[i+1];
-				recover.path = arguments[i+1];
+				if([arguments[i+1] isAbsolutePath])
+				{
+					ghost.path = arguments[i+1];
+					recover.path = arguments[i+1];
+				}
 
 			}else
 			{
@@ -150,15 +156,23 @@ int main(int argc, char **argv, char **envp) {
 	}
 	if(recover.hasRecover&&recover.path&&recover.group)
 	{
-		addKeychainItemWithPath(recover.path,recover.group);
-		return 0;
+		if([recover.path isAbsolutePath])
+		{
+			addKeychainItemWithPath(recover.path,recover.group);
+			return 0;
+		}
 	}
 	if(ghost.hasGhost)
 	{
-		if(ghost.path)
+		if(ghost.path&&ghost.group)
 		{
-			ghostKeychain(ghost.path);
-			return 0;
+			if([ghost.path isAbsolutePath])
+			{
+				NSLog(@"---ghost--%@--%@-----",ghost.path,ghost.group);
+				ghostKeychainWithGroup(ghost.path,ghost.group);
+				return 0;
+			}
+			
 		}
 	}
 	

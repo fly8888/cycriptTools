@@ -10,14 +10,14 @@ void printUsage()
 {
     printToStdOut(@"Usage: keychain_dumper [-e]|[-h]|[-agnick]\n");
 	//delete
-	printToStdOut(@"-r -a: Delete All Keychain Items(Generic Passwords, Internet Passwords, Identities, Certificates, and Keys)\n");
-	printToStdOut(@"-r -g: Delete This Group Keychain Items\n");
+	printToStdOut(@"-r -a : Delete All Keychain Items(Generic Passwords, Internet Passwords, Identities, Certificates, and Keys)\n");
+	printToStdOut(@"-r -g [group]: Delete This Group Keychain Items\n");
 	//list
 	printToStdOut(@"-l -g : Show All Groups In Keychain\n");
 	printToStdOut(@"-l -a : Show All Items In Keychain\n");
 	//ghost || recover
-	printToStdOut(@"-ghost -p : Ghost Keychain To Path\n");
-	printToStdOut(@"-recover -p -g : Recover Keychain Item In Plist\n");
+	printToStdOut(@"-ghost -p [path] -g [group] : Ghost Keychain To Path\n");
+	printToStdOut(@"-recover -p [path] -g [group] : Recover Keychain Item In Plist\n");
 
 
     /*
