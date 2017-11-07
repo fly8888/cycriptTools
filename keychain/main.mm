@@ -168,7 +168,6 @@ int main(int argc, char **argv, char **envp) {
 		{
 			if([ghost.path isAbsolutePath])
 			{
-				NSLog(@"---ghost--%@--%@-----",ghost.path,ghost.group);
 				ghostKeychainWithGroup(ghost.path,ghost.group);
 				return 0;
 			}
